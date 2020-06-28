@@ -22,5 +22,8 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         }
     });
+    User.associate = (models) => {
+        User.belongsToMany(models.Group, { through: models.UserGroup, foreignKey: 'user_id', onDelete: 'CASCADE' });
+    };
     return User;
 };
