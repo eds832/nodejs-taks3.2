@@ -1,11 +1,11 @@
 {
-    "name": "task3.2",
+    "name": "task4.3",
     "version": "1.0.0",
-    "description": "Task 3.2",
+    "description": "Task 4.3",
     "main": "lib/index.js",
     "scripts": {
         "build": "babel src --out-dir lib",
-        "task3.2": "nodemon src/index.js --exec babel-node",
+        "task4.3": "nodemon src/index.js --exec babel-node",
         "start": "node lib/index.js",
         "lint": "eslint \"./**/*.js\" --quiet",
         "lintFull": "eslint \"./**/*.js\"",
