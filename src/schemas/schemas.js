@@ -12,3 +12,8 @@ export const userUpdateSchema = Joi.object().keys({
     age: Joi.number().integer().min(4).max(130).required(),
     isDeleted: Joi.boolean().required()
 });
+
+export const groupSchema = Joi.object().keys({
+    name: Joi.string().alphanum().min(3).max(30).required(),
+    permissions: Joi.array().items(Joi.string().regex(/^(READ|WRITE|DELETE|SHARE|UPLOAD_FILES)$/)).required()
+});
