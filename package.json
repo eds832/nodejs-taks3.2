@@ -1,11 +1,11 @@
 {
-    "name": "task3.2",
+    "name": "task5",
     "version": "1.0.0",
-    "description": "Task 3.2",
+    "description": "Task 5",
     "main": "lib/index.js",
     "scripts": {
         "build": "babel src --out-dir lib",
-        "task3.2": "nodemon src/index.js --exec babel-node",
+        "task5": "nodemon src/index.js --exec babel-node",
         "start": "node lib/index.js",
         "lint": "eslint \"./**/*.js\" --quiet",
         "lintFull": "eslint \"./**/*.js\"",
@@ -36,6 +36,7 @@
         "pg-hstore": "^2.3.3",
         "sequelize": "^5.21.13",
         "standard": "^14.3.4",
-        "uuid": "^8.1.0"
+        "uuid": "^8.1.0",
+        "winston": "^3.3.3"
     }
 }

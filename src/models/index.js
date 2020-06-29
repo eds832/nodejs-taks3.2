@@ -1,11 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 import Sequelize from 'sequelize';
+import logger from '../util/logger';
 
 const basename = path.basename(__filename);
 const database = {};
 
-console.log(`start DB: ${  process.env.DB_NAME}`);
+logger.info(`start DB: ${  process.env.DB_NAME}`);
 
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASS, {
     host: process.env.DB_HOST,
@@ -21,7 +22,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
         ssl: true,
         native: true
     },
-    logging: true,
+    logging: (msg) => logger.info(msg),
     define: {
         timestamps: false
     }
