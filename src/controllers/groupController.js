@@ -1,4 +1,4 @@
-import { save, getById, update, getAllGroups, remove } from '../services/GroupService';
+import { save, getById, update, getAllGroups, remove, addUsersToGroup } from '../services/GroupService';
 import { v4 as uuidv4 } from 'uuid';
 import { bad } from '../util/constant';
 import logger from '../util/logger';
@@ -73,6 +73,27 @@ export const removeGroup = async (request, response) => {
         }
     } catch (err) {
         logger.error(`removeGroup by id: ${id} failed, message: ${err.message}`);
+        response.status(500).send(bad);
+    }
+};
+
+export const addUsers = async (request, response) => {
+    const groupId = request.params.id;
+    const userIds = request.body;
+    logger.info(`addUsers groupId: ${groupId}, userIds: ${JSON.stringify(userIds)}`);
+    try {
+        const userGroup = await addUsersToGroup(groupId, userIds);
+        if (userGroup) {
+            if (userGroup.message === undefined) {
+                response.status(201).send(userGroup);
+            } else {
+                response.status(404).send(userGroup);
+            }
+        } else {
+            response.status(404).send();
+        }
+    } catch (err) {
+        logger.error(`addUsers failed, groupId: ${groupId}, userIds: ${JSON.stringify(userIds)}, message: ${err.message}`);
         response.status(500).send(bad);
     }
 };
