@@ -20,12 +20,12 @@ CREATE DATABASE usersdb
 	
 CREATE TABLE public."Users"
 (
-    id character varying COLLATE pg_catalog."default" NOT NULL,
-    login character varying COLLATE pg_catalog."default" NOT NULL,
-    password character varying COLLATE pg_catalog."default" NOT NULL,
+    id character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    login character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    password character varying(255) COLLATE pg_catalog."default" NOT NULL,
     age integer NOT NULL,
     "isDeleted" boolean NOT NULL,
-    CONSTRAINT user_pkey PRIMARY KEY (id)
+    CONSTRAINT "Users_pkey" PRIMARY KEY (id)
 )
 WITH (
     OIDS = FALSE
