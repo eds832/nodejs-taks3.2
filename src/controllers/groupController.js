@@ -1,4 +1,4 @@
-import { save, getById, update, getAllGroups, remove } from '../services/GroupService';
+import { save, getById, update, getAllGroups, remove, addUsersToGroup } from '../services/GroupService';
 import { v4 as uuidv4 } from 'uuid';
 import { bad } from '../util/constant';
 
@@ -62,6 +62,26 @@ export const removeGroup = async (request, response) => {
         const group = await remove(id);
         if (group) {
             response.send(group);
+        } else {
+            response.status(404).send();
+        }
+    } catch (err) {
+        console.error(err);
+        response.status(500).send(bad);
+    }
+};
+
+export const addUsers = async (request, response) => {
+    const groupId = request.params.id;
+    const userIds = request.body;
+    try {
+        const userGroup = await addUsersToGroup(groupId, userIds);
+        if (userGroup) {
+            if (userGroup.message === undefined) {
+                response.status(201).send(userGroup);
+            } else {
+                response.status(404).send(userGroup);
+            }
         } else {
             response.status(404).send();
         }

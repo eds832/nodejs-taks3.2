@@ -53,3 +53,24 @@ export const removeGroup = async (id) => {
         throw error;
     }
 };
+
+export const saveUserGroup = async (groupId, userIds) => {
+    try {
+        const group = await database.Group.findOne({ where: { id : groupId } });
+        if (group) {
+            const users = await database.User.findAll({ where: { id : userIds, isDeleted : false } });
+            if (users && users.length === userIds.length) {
+                await database.sequelize.transaction(async (t) => {
+                    await group.addUsers(userIds, { transaction: t });
+                });
+                return await group.getUsers({ through: { group_id: groupId } });
+            }
+            const userIdsFromDB = users.map((u) => (u.id));
+            const notFoundUserIds = userIds.filter((id) => !userIdsFromDB.includes(id));
+            return { message : `users with ids: ${JSON.stringify(notFoundUserIds)} aren't found` };
+        }
+        return { message : `group with id: ${groupId} isn't found` };
+    } catch (error) {
+        throw error;
+    }
+};

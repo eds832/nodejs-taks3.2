@@ -1,4 +1,4 @@
-import { saveGroup, getGroup, getAll, updateGroup, removeGroup } from '../data-access/GroupRepository';
+import { saveGroup, getGroup, getAll, updateGroup, removeGroup, saveUserGroup } from '../data-access/GroupRepository';
 
 export const save = async (newGroup) => {
     try {
@@ -35,6 +35,14 @@ export const update = async (id, group) => {
 export const remove = async (id) => {
     try {
         return await removeGroup(id);
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const addUsersToGroup = async (groupId, userIds) => {
+    try {
+        return await saveUserGroup(groupId, userIds);
     } catch (error) {
         throw error;
     }

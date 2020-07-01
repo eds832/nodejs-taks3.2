@@ -1,6 +1,5 @@
 import express from 'express';
-import { saveGroup, getGroup, getGroups, updateGroup, removeGroup } from '../controllers/groupController';
-import { addUsers } from '../controllers/userGroupController';
+import { saveGroup, getGroup, getGroups, updateGroup, removeGroup, addUsers } from '../controllers/groupController';
 import { groupSchema, userGroupSchema } from '../schemas/schemas';
 import { validateSchema } from '../schemas/validator';
 
