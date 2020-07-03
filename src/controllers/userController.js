@@ -4,18 +4,13 @@ import { notFoundEntity } from '../util/constant';
 import logger from '../util/logger';
 
 export const saveUser = async (request, response, next) => {
-    const userId = uuidv4();
-    const userLogin = request.body.login;
-    const userPassword = request.body.password;
-    const userAge = request.body.age;
-    const isUserDeleted = false;
-    logger.info(`saveUser {id: ${userId}, login: ${userLogin}, password: ${userPassword}, age: ${userAge}, isDeleted: ${isUserDeleted}}`);
+    let user = { id: uuidv4(), ...request.body, isDeleted: false };
+    logger.info(`saveUser ${JSON.stringify(user)}`);
     try {
-        const user = await save(
-            { id: userId, login: userLogin, password: userPassword, age: userAge, isDeleted: isUserDeleted });
+        user = await save(user);
         response.status(201).send(user);
     } catch (err) {
-        err.message = `saveUser failed: {id: ${userId}, login: ${userLogin}, password: ${userPassword}, age: ${userAge}, isDeleted: ${isUserDeleted}}, message: ${err.message}`;
+        err.message = `saveUser failed: ${JSON.stringify(user)}, message: ${err.message}`;
         return next(err);
     }
 };
@@ -37,22 +32,17 @@ export const getUser = async (request, response, next) => {
 };
 
 export const updateUser = async (request, response, next) => {
-    const userId = request.params.id;
-    const userLogin = request.body.login;
-    const userPassword = request.body.password;
-    const userAge = request.body.age;
-    const isUserDeleted = request.body.isDeleted;
-    logger.info(`updateUser req: {id: ${userId}, login: ${userLogin}, password: ${userPassword}, age: ${userAge}, isDeleted: ${isUserDeleted}}`);
+    const user = { id: request.params.id, ...request.body };
+    logger.info(`updateUser req: ${JSON.stringify(user)}`);
     try {
-        const user = await update(userId,
-            { id: userId, login: userLogin, password: userPassword, age: userAge, isDeleted: isUserDeleted });
-        if (user) {
-            response.send(user);
+        const updatedUser = await update(user.id, user);
+        if (updatedUser) {
+            response.send(updatedUser);
         } else {
             response.status(404).send(notFoundEntity);
         }
     } catch (err) {
-        err.message = `updateUser failed: {id: ${userId}, login: ${userLogin}, password: ${userPassword}, age: ${userAge}, isDeleted: ${isUserDeleted}, message: ${err.message}`;
+        err.message = `updateUser failed: ${JSON.stringify(user)}, message: ${err.message}`;
         return next(err);
     }
 };

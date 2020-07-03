@@ -4,15 +4,13 @@ import { notFoundEntity } from '../util/constant';
 import logger from '../util/logger';
 
 export const saveGroup = async (request, response, next) => {
-    const groupId = uuidv4();
-    const groupName = request.body.name;
-    const groupPermissions = request.body.permissions;
-    logger.info(`saveGroup {id: ${groupId}, name: ${groupName}, permissions: ${groupPermissions}}`);
+    let group = { id: uuidv4(), ...request.body };
+    logger.info(`saveGroup ${JSON.stringify(group)}`);
     try {
-        const group = await save({ id: groupId, name: groupName, permissions: groupPermissions });
+        group = await save(group);
         response.status(201).send(group);
     } catch (err) {
-        err.message = `saveGroup failed: {id: ${groupId}, name: ${groupName}, permissions: ${groupPermissions}}, message: ${err.message}`;
+        err.message = `saveGroup failed: ${JSON.stringify(group)}, message: ${err.message}`;
         return next(err);
     }
 };
@@ -34,19 +32,17 @@ export const getGroup = async (request, response, next) => {
 };
 
 export const updateGroup = async (request, response, next) => {
-    const groupId = request.params.id;
-    const groupName = request.body.name;
-    const groupPermissions = request.body.permissions;
-    logger.info(`updateGroup {id: ${groupId}, name: ${groupName}, permissions: ${groupPermissions}}`);
+    const group = { id: request.params.id, ...request.body };
+    logger.info(`updateGroup ${JSON.stringify(group)}`);
     try {
-        const group = await update(groupId, { id: groupId, name: groupName, permissions: groupPermissions });
-        if (group) {
-            response.send(group);
+        const updatedGroup = await update(group.id, group);
+        if (updatedGroup) {
+            response.send(updatedGroup);
         } else {
             response.status(404).send(notFoundEntity);
         }
     } catch (err) {
-        err.message = `updateGroup failed: {id: ${groupId}, name: ${groupName}, permissions: ${groupPermissions}}, message: ${err.message}`;
+        err.message = `updateGroup failed: ${JSON.stringify(group)}, message: ${err.message}`;
         return next(err);
     }
 };
