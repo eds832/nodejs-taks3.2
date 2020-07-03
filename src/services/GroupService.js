@@ -1,49 +1,25 @@
 import { saveGroup, getGroup, getAll, updateGroup, removeGroup, saveUserGroup } from '../data-access/GroupRepository';
 
 export const save = async (newGroup) => {
-    try {
-        return await saveGroup(newGroup);
-    } catch (error) {
-        throw error;
-    }
+    return await saveGroup(newGroup);
 };
 
 export const getById = async (id) => {
-    try {
-        return await getGroup(id);
-    } catch (error) {
-        throw error;
-    }
+    return await getGroup(id);
 };
 
 export const getAllGroups = async () => {
-    try {
-        return await getAll();
-    } catch (error) {
-        throw error;
-    }
+    return await getAll();
 };
 
 export const update = async (id, group) => {
-    try {
-        return await updateGroup(id, group);
-    } catch (error) {
-        throw error;
-    }
+    return await updateGroup(id, group);
 };
 
 export const remove = async (id) => {
-    try {
-        return await removeGroup(id);
-    } catch (error) {
-        throw error;
-    }
+    return await removeGroup(id);
 };
 
 export const addUsersToGroup = async (groupId, userIds) => {
-    try {
-        return await saveUserGroup(groupId, userIds);
-    } catch (error) {
-        throw error;
-    }
+    return await saveUserGroup(groupId, userIds);
 };
