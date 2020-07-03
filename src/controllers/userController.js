@@ -1,9 +1,9 @@
 import { save, getById, update, getAutoSuggestUsers, getAllUsers, remove } from '../services/UserService';
 import { v4 as uuidv4 } from 'uuid';
-import { bad } from '../util/constant';
+import { notFoundEntity } from '../util/constant';
 import logger from '../util/logger';
 
-export const saveUser = async (request, response) => {
+export const saveUser = async (request, response, next) => {
     const userId = uuidv4();
     const userLogin = request.body.login;
     const userPassword = request.body.password;
@@ -15,12 +15,12 @@ export const saveUser = async (request, response) => {
             { id: userId, login: userLogin, password: userPassword, age: userAge, isDeleted: isUserDeleted });
         response.status(201).send(user);
     } catch (err) {
-        logger.error(`saveUser failed: {id: ${userId}, login: ${userLogin}, password: ${userPassword}, age: ${userAge}, isDeleted: ${isUserDeleted}}, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `saveUser failed: {id: ${userId}, login: ${userLogin}, password: ${userPassword}, age: ${userAge}, isDeleted: ${isUserDeleted}}, message: ${err.message}`;
+        return next(err);
     }
 };
 
-export const getUser = async (request, response) => {
+export const getUser = async (request, response, next) => {
     const id = request.params.id;
     logger.info(`getUser by id: ${id}`);
     try {
@@ -28,15 +28,15 @@ export const getUser = async (request, response) => {
         if (user) {
             response.send(user);
         } else {
-            response.status(404).send();
+            response.status(404).send(notFoundEntity);
         }
     } catch (err) {
-        logger.error(`getUser by id: ${id} failed, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `getUser by id: ${id} failed, message: ${err.message}`;
+        return next(err);
     }
 };
 
-export const updateUser = async (request, response) => {
+export const updateUser = async (request, response, next) => {
     const userId = request.params.id;
     const userLogin = request.body.login;
     const userPassword = request.body.password;
@@ -49,15 +49,15 @@ export const updateUser = async (request, response) => {
         if (user) {
             response.send(user);
         } else {
-            response.status(404).send();
+            response.status(404).send(notFoundEntity);
         }
     } catch (err) {
-        logger.error(`updateUser failed: {id: ${userId}, login: ${userLogin}, password: ${userPassword}, age: ${userAge}, isDeleted: ${isUserDeleted}, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `updateUser failed: {id: ${userId}, login: ${userLogin}, password: ${userPassword}, age: ${userAge}, isDeleted: ${isUserDeleted}, message: ${err.message}`;
+        return next(err);
     }
 };
 
-export const getUsers = async (request, response) => {
+export const getUsers = async (request, response, next) => {
     const loginSubstring = String(request.body.loginSubstring);
     const limit = parseInt(request.body.limit, 10);
     logger.info(`getUsers loginSubstring: ${request.body.loginSubstring}, limit: ${request.body.limit}`);
@@ -68,12 +68,12 @@ export const getUsers = async (request, response) => {
             response.send(await getAllUsers());
         }
     } catch (err) {
-        logger.error(`getUsers failed, loginSubstring: ${request.body.loginSubstring}, limit: ${request.body.limit}, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `getUsers failed, loginSubstring: ${request.body.loginSubstring}, limit: ${request.body.limit}, message: ${err.message}`;
+        return next(err);
     }
 };
 
-export const removeUser = async (request, response) => {
+export const removeUser = async (request, response, next) => {
     const id = request.params.id;
     logger.info(`removeUser by id: ${id}`);
     try {
@@ -81,10 +81,10 @@ export const removeUser = async (request, response) => {
         if (user) {
             response.send(user);
         } else {
-            response.status(404).send();
+            response.status(404).send(notFoundEntity);
         }
     } catch (err) {
-        logger.error(`removeUser by id: ${id} failed, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `removeUser by id: ${id} failed, message: ${err.message}`;
+        return next(err);
     }
 };

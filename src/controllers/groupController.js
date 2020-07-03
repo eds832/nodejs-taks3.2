@@ -1,9 +1,9 @@
 import { save, getById, update, getAllGroups, remove, addUsersToGroup } from '../services/GroupService';
 import { v4 as uuidv4 } from 'uuid';
-import { bad } from '../util/constant';
+import { notFoundEntity } from '../util/constant';
 import logger from '../util/logger';
 
-export const saveGroup = async (request, response) => {
+export const saveGroup = async (request, response, next) => {
     const groupId = uuidv4();
     const groupName = request.body.name;
     const groupPermissions = request.body.permissions;
@@ -12,12 +12,12 @@ export const saveGroup = async (request, response) => {
         const group = await save({ id: groupId, name: groupName, permissions: groupPermissions });
         response.status(201).send(group);
     } catch (err) {
-        logger.error(`saveGroup failed: {id: ${groupId}, name: ${groupName}, permissions: ${groupPermissions}}, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `saveGroup failed: {id: ${groupId}, name: ${groupName}, permissions: ${groupPermissions}}, message: ${err.message}`;
+        return next(err);
     }
 };
 
-export const getGroup = async (request, response) => {
+export const getGroup = async (request, response, next) => {
     const id = request.params.id;
     logger.info(`getGroup by id: ${id}`);
     try {
@@ -25,15 +25,15 @@ export const getGroup = async (request, response) => {
         if (group) {
             response.send(group);
         } else {
-            response.status(404).send();
+            response.status(404).send(notFoundEntity);
         }
     } catch (err) {
-        logger.error(`getGroup by id: ${id} failed, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `getGroup by id: ${id} failed, message: ${err.message}`;
+        return next(err);
     }
 };
 
-export const updateGroup = async (request, response) => {
+export const updateGroup = async (request, response, next) => {
     const groupId = request.params.id;
     const groupName = request.body.name;
     const groupPermissions = request.body.permissions;
@@ -43,25 +43,25 @@ export const updateGroup = async (request, response) => {
         if (group) {
             response.send(group);
         } else {
-            response.status(404).send();
+            response.status(404).send(notFoundEntity);
         }
     } catch (err) {
-        logger.error(`updateGroup failed: {id: ${groupId}, name: ${groupName}, permissions: ${groupPermissions}}, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `updateGroup failed: {id: ${groupId}, name: ${groupName}, permissions: ${groupPermissions}}, message: ${err.message}`;
+        return next(err);
     }
 };
 
-export const getGroups = async (request, response) => {
+export const getGroups = async (request, response, next) => {
     logger.info('getGroups');
     try {
         response.send(await getAllGroups());
     } catch (err) {
-        logger.error(`getGroups failed, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `getGroups failed, message: ${err.message}`;
+        return next(err);
     }
 };
 
-export const removeGroup = async (request, response) => {
+export const removeGroup = async (request, response, next) => {
     const id = request.params.id;
     logger.info(`removeGroup by id: ${id}`);
     try {
@@ -69,15 +69,15 @@ export const removeGroup = async (request, response) => {
         if (group) {
             response.send(group);
         } else {
-            response.status(404).send();
+            response.status(404).send(notFoundEntity);
         }
     } catch (err) {
-        logger.error(`removeGroup by id: ${id} failed, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `removeGroup by id: ${id} failed, message: ${err.message}`;
+        return next(err);
     }
 };
 
-export const addUsers = async (request, response) => {
+export const addUsers = async (request, response, next) => {
     const groupId = request.params.id;
     const userIds = request.body;
     logger.info(`addUsers groupId: ${groupId}, userIds: ${JSON.stringify(userIds)}`);
@@ -90,10 +90,10 @@ export const addUsers = async (request, response) => {
                 response.status(404).send(userGroup);
             }
         } else {
-            response.status(404).send();
+            response.status(404).send(notFoundEntity);
         }
     } catch (err) {
-        logger.error(`addUsers failed, groupId: ${groupId}, userIds: ${JSON.stringify(userIds)}, message: ${err.message}`);
-        response.status(500).send(bad);
+        err.message = `addUsers failed, groupId: ${groupId}, userIds: ${JSON.stringify(userIds)}, message: ${err.message}`;
+        return next(err);
     }
 };

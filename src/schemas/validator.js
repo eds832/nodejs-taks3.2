@@ -21,7 +21,7 @@ export const validateSchema = (schema) => {
             logger.warn(`invalid body: ${error.message}, url: ${req.url}`);
             res.status(400).json(errorResponse(error.details));
         } else {
-            next();
+            return next();
         }
     };
 };
