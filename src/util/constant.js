@@ -3,3 +3,5 @@ export const internalErr = { status: 'Internal Server Error', error : 'Unfortuna
 export const notFoundEntity = { status: 'Not Found', error : "Entity with specified id wasn't found" };
 
 export const notFound = { status: 'Not Found', error : "Specified resource wasn't found" };
+
+export const statusNotFound = 'Not Found';

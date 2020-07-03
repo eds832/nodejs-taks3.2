@@ -1,6 +1,6 @@
 import { save, getById, update, getAllGroups, remove, addUsersToGroup } from '../services/GroupService';
 import { v4 as uuidv4 } from 'uuid';
-import { notFoundEntity } from '../util/constant';
+import { notFoundEntity, statusNotFound } from '../util/constant';
 import logger from '../util/logger';
 
 export const saveGroup = async (request, response, next) => {
@@ -83,6 +83,7 @@ export const addUsers = async (request, response, next) => {
             if (userGroup.message === undefined) {
                 response.status(201).send(userGroup);
             } else {
+                userGroup.status = statusNotFound;
                 response.status(404).send(userGroup);
             }
         } else {
