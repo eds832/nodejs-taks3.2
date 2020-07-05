@@ -8,13 +8,17 @@ import { omitPassword } from '../util/util';
 export const saveUser = async (request, response, next) => {
     let user = { id: uuidv4(), ...request.body, isDeleted: false };
     user.password = await bcrypt.hash(user.password, +process.env.APP_SECRET_SALT);
-    logger.info(`saveUser ${JSON.stringify(omitPassword(user))}`);
+    response.locals.log = `saveUser ${JSON.stringify(omitPassword(user))}`;
     try {
         user = await save(user);
         if (user) {
-            response.status(201).send(omitPassword(user));
+            response.locals.status = 201;
+            response.locals.send = omitPassword(user);
+            next();
         } else {
-            response.status(400).send(wrongLogin);
+            response.locals.status = 400;
+            response.locals.send = wrongLogin;
+            next();
         }
     } catch (err) {
         err.message = `saveUser failed: ${JSON.stringify(omitPassword(user))}, message: ${err.message}`;
@@ -24,13 +28,17 @@ export const saveUser = async (request, response, next) => {
 
 export const getUser = async (request, response, next) => {
     const id = request.params.id;
-    logger.info(`getUser by id: ${id}`);
+    response.locals.log = `getUser by id: ${id}`;
     try {
         const user = await getById(id);
         if (user) {
-            response.send(omitPassword(user));
+            response.locals.status = 200;
+            response.locals.send = omitPassword(user);
+            next();
         } else {
-            response.status(404).send(notFoundEntity);
+            response.locals.status = 404;
+            response.locals.send = notFoundEntity;
+            next();
         }
     } catch (err) {
         err.message = `getUser by id: ${id} failed, message: ${err.message}`;
@@ -41,17 +49,23 @@ export const getUser = async (request, response, next) => {
 export const updateUser = async (request, response, next) => {
     let user = { id: request.params.id, ...request.body };
     user.password = await bcrypt.hash(user.password, +process.env.APP_SECRET_SALT);
-    logger.info(`updateUser req: ${JSON.stringify(omitPassword(user))}`);
+    response.locals.log = `updateUser req: ${JSON.stringify(omitPassword(user))}`;
     try {
         user = await update(user.id, user);
         if (user) {
             if (user.error === undefined) {
-                response.send(omitPassword(user));
+                response.locals.status = 200;
+                response.locals.send = omitPassword(user);
+                next();
             } else {
-                response.status(400).send(wrongLogin);
+                response.locals.status = 400;
+                response.locals.send = wrongLogin;
+                next();
             }
         } else {
-            response.status(404).send(notFoundEntity);
+            response.locals.status = 404;
+            response.locals.send = notFoundEntity;
+            next();
         }
     } catch (err) {
         err.message = `updateUser failed: ${JSON.stringify(omitPassword(user))}, message: ${err.message}`;
@@ -62,7 +76,7 @@ export const updateUser = async (request, response, next) => {
 export const getUsers = async (request, response, next) => {
     const loginSubstring = String(request.body.loginSubstring);
     const limit = parseInt(request.body.limit, process.env.APP_SECRET_SALT);
-    logger.info(`getUsers loginSubstring: ${request.body.loginSubstring}, limit: ${request.body.limit}`);
+    response.locals.log = `getUsers loginSubstring: ${request.body.loginSubstring}, limit: ${request.body.limit}`;
     try {
         let users;
         if (loginSubstring && limit && limit >= 0) {
@@ -71,7 +85,9 @@ export const getUsers = async (request, response, next) => {
             users = await getAllUsers();
         }
         users = users.map(u => omitPassword(u));
-        response.send(users);
+        response.locals.status = 200;
+        response.locals.send = users;
+        next();
     } catch (err) {
         err.message = `getUsers failed, loginSubstring: ${request.body.loginSubstring}, limit: ${request.body.limit}, message: ${err.message}`;
         return next(err);
@@ -80,13 +96,17 @@ export const getUsers = async (request, response, next) => {
 
 export const removeUser = async (request, response, next) => {
     const id = request.params.id;
-    logger.info(`removeUser by id: ${id}`);
+    response.locals.log = `removeUser by id: ${id}`;
     try {
         const user = await remove(id);
         if (user) {
-            response.send(omitPassword(user));
+            response.locals.status = 200;
+            response.locals.send = omitPassword(user);
+            next();
         } else {
-            response.status(404).send(notFoundEntity);
+            response.locals.status = 404;
+            response.locals.send = notFoundEntity;
+            next();
         }
     } catch (err) {
         err.message = `removeUser by id: ${id} failed, message: ${err.message}`;
@@ -117,13 +137,17 @@ export const checkUser = async (request, response, next) => {
 };
 
 export const loginUser = async (request, response, next) => {
-    logger.info(`loginUser with login: ${request.body.username}`);
+    response.locals.log = `loginUser with login: ${request.body.username}`;
     try {
         const token = await login(request.body.username, request.body.password);
         if (token) {
-            response.status(201).send({ token });
+            response.locals.status = 201;
+            response.locals.send = { token };
+            next();
         } else {
-            response.status(401).send(wrongLoginPassword);
+            response.locals.status = 401;
+            response.locals.send = wrongLoginPassword;
+            next();
         }
     } catch (err) {
         err.message = `loginUser with login: ${request.body.username} failed, message: ${err.message}`;
