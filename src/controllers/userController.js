@@ -1,14 +1,15 @@
 import { save, getById, update, getAutoSuggestUsers, getAllUsers, remove } from '../services/UserService';
 import { v4 as uuidv4 } from 'uuid';
 import { notFoundEntity } from '../util/constant';
-import logger from '../util/logger';
 
 export const saveUser = async (request, response, next) => {
     let user = { id: uuidv4(), ...request.body, isDeleted: false };
-    logger.info(`saveUser ${JSON.stringify(user)}`);
+    response.locals.log = `saveUser ${JSON.stringify(user)}`;
     try {
         user = await save(user);
-        response.status(201).send(user);
+        response.locals.status = 201;
+        response.locals.send = user;
+        next();
     } catch (err) {
         err.message = `saveUser failed: ${JSON.stringify(user)}, message: ${err.message}`;
         return next(err);
@@ -17,13 +18,17 @@ export const saveUser = async (request, response, next) => {
 
 export const getUser = async (request, response, next) => {
     const id = request.params.id;
-    logger.info(`getUser by id: ${id}`);
+    response.locals.log = `getUser by id: ${id}`;
     try {
         const user = await getById(id);
         if (user) {
-            response.send(user);
+            response.locals.status = 200;
+            response.locals.send = user;
+            next();
         } else {
-            response.status(404).send(notFoundEntity);
+            response.locals.status = 404;
+            response.locals.send = notFoundEntity;
+            next();
         }
     } catch (err) {
         err.message = `getUser by id: ${id} failed, message: ${err.message}`;
@@ -33,13 +38,17 @@ export const getUser = async (request, response, next) => {
 
 export const updateUser = async (request, response, next) => {
     const user = { id: request.params.id, ...request.body };
-    logger.info(`updateUser req: ${JSON.stringify(user)}`);
+    response.locals.log = `updateUser req: ${JSON.stringify(user)}`;
     try {
         const updatedUser = await update(user.id, user);
         if (updatedUser) {
-            response.send(updatedUser);
+            response.locals.status = 200;
+            response.locals.send = updatedUser;
+            next();
         } else {
-            response.status(404).send(notFoundEntity);
+            response.locals.status = 404;
+            response.locals.send = notFoundEntity;
+            next();
         }
     } catch (err) {
         err.message = `updateUser failed: ${JSON.stringify(user)}, message: ${err.message}`;
@@ -50,12 +59,19 @@ export const updateUser = async (request, response, next) => {
 export const getUsers = async (request, response, next) => {
     const loginSubstring = String(request.body.loginSubstring);
     const limit = parseInt(request.body.limit, 10);
-    logger.info(`getUsers loginSubstring: ${request.body.loginSubstring}, limit: ${request.body.limit}`);
+    response.locals.log = `getUsers loginSubstring: ${request.body.loginSubstring}, limit: ${request.body.limit}`;
+    let users;
     try {
         if (loginSubstring && limit && limit >= 0) {
-            response.send(await getAutoSuggestUsers(loginSubstring, limit));
+            users = await getAutoSuggestUsers(loginSubstring, limit);
+            response.locals.status = 200;
+            response.locals.send = users;
+            next();
         } else {
-            response.send(await getAllUsers());
+            users = await getAllUsers();
+            response.locals.status = 200;
+            response.locals.send = users;
+            next();
         }
     } catch (err) {
         err.message = `getUsers failed, loginSubstring: ${request.body.loginSubstring}, limit: ${request.body.limit}, message: ${err.message}`;
@@ -65,13 +81,17 @@ export const getUsers = async (request, response, next) => {
 
 export const removeUser = async (request, response, next) => {
     const id = request.params.id;
-    logger.info(`removeUser by id: ${id}`);
+    response.locals.log = `removeUser by id: ${id}`;
     try {
         const user = await remove(id);
         if (user) {
-            response.send(user);
+            response.locals.status = 200;
+            response.locals.send = user;
+            next();
         } else {
-            response.status(404).send(notFoundEntity);
+            response.locals.status = 404;
+            response.locals.send = notFoundEntity;
+            next();
         }
     } catch (err) {
         err.message = `removeUser by id: ${id} failed, message: ${err.message}`;

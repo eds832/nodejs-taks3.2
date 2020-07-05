@@ -1,4 +1,4 @@
-Scripts to run: (npm run build, npm run lintFix, npm run start) or npm run task4.2
+Scripts to run: (npm run build, npm run lintFix, npm run start) or npm run task5
 
 URL to test in Postman: http://localhost:8000/users, http://localhost:8000/groups, http://localhost:8000/groups/groupId/users
 

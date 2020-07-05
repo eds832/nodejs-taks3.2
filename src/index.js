@@ -9,13 +9,19 @@ const app = express();
 
 app.use(express.json());
 
-app.use((req, res, next) => {
-    logger.info(`request url: ${req.url}, method: ${req.method}, body: ${JSON.stringify(req.body)}`);
-    next();
-});
-
 app.use('/users', userRouter);
 app.use('/groups', groupRouter);
+
+app.use((req, res, next) => {
+    if (res.locals.log) {
+        logger.info(res.locals.log);
+    }
+    if (res.locals.status && res.locals.send) {
+        res.status(res.locals.status).send(res.locals.send);
+    } else {
+        return next();
+    }
+});
 
 app.use((err, req, res, next) => {
     if (!err) {
