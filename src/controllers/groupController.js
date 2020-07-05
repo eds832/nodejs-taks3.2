@@ -2,6 +2,7 @@ import { save, getById, update, getAllGroups, remove, addUsersToGroup } from '..
 import { v4 as uuidv4 } from 'uuid';
 import { notFoundEntity, statusNotFound } from '../util/constant';
 import logger from '../util/logger';
+import { omitPassword } from '../util/util';
 
 export const saveGroup = async (request, response, next) => {
     let group = { id: uuidv4(), ...request.body };
@@ -80,8 +81,9 @@ export const addUsers = async (request, response, next) => {
     try {
         const userGroup = await addUsersToGroup(groupId, userIds);
         if (userGroup) {
-            if (userGroup.message === undefined) {
-                response.status(201).send(userGroup);
+            if (userGroup.error === undefined) {
+                const group = userGroup.map(u => omitPassword(u));
+                response.status(201).send(group);
             } else {
                 userGroup.status = statusNotFound;
                 response.status(404).send(userGroup);

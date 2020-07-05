@@ -46,7 +46,7 @@ export const saveUserGroup = async (groupId, userIds) => {
         }
         const userIdsFromDB = users.map((u) => (u.id));
         const notFoundUserIds = userIds.filter((id) => !userIdsFromDB.includes(id));
-        return { message : `users with ids: ${JSON.stringify(notFoundUserIds)} aren't found` };
+        return { error : `users with ids: ${JSON.stringify(notFoundUserIds)} aren't found` };
     }
-    return { message : `group with id: ${groupId} isn't found` };
+    return { error : `group with id: ${groupId} isn't found` };
 };

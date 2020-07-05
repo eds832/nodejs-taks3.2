@@ -1,6 +1,11 @@
-Scripts to run: (npm run build, npm run lintFix, npm run start) or npm run task4.2
+Scripts to run: (npm run build, npm run lintFix, npm run start) or npm run task6
 
 URL to test in Postman: http://localhost:8000/users, http://localhost:8000/groups, http://localhost:8000/groups/groupId/users
+
+crate DB with an insert in Users table (scripts are at the bottom of the page)
+set up Postman header Origin: http://127.0.0.1:8000
+call post in Postman http://localhost:8000/login with body {"username": "login1","password": "password1"} to get tokenValue
+set up Postman header Authorization: Bearer tokenValue
 
 post user body json: {"login" : "login1", "password" : "password1", "age" : 11}
 put user body json: {"login" : "login1", "password" : "password1", "age" : 11, "isDeleted" : false}
@@ -37,8 +42,8 @@ ALTER TABLE public."Users"
     OWNER to postgres;
 	
 INSERT INTO public."Users"(
-	id, login, password, age, "isDeleted")
-	VALUES (?, ?, ?, ?, ?);
+	id, login, password, age, "isDeleted") 						-- password1 encripted by bcrypt
+	VALUES ('244d4868-0c3a-4b87-9fea-72f4a0c66932', 'login1', '$2a$10$ymg3HD3VCTHAQU0J9E232.d2JuEHPqOqDXBpaBBxmOjeUxIaYmcli', 11, false);
 	
 CREATE TABLE public."Groups"
 (
