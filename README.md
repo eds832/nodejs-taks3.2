@@ -1,17 +1,16 @@
 Scripts to run: (npm run build, npm run lintFix, npm run start) or npm run task6
 
-URL to test in Postman: http://localhost:8000/users, http://localhost:8000/groups, http://localhost:8000/groups/groupId/users
-
 crate DB with an insert in Users table (scripts are at the bottom of the page)
-set up Postman header Origin: http://127.0.0.1:8000
+set up Postman headers Origin: http://127.0.0.1:8000 , Content-Type: application/json
 call post in Postman http://localhost:8000/login with body {"username": "login1","password": "password1"} to get tokenValue
 set up Postman header Authorization: Bearer tokenValue
 
-post user body json: {"login" : "login1", "password" : "password1", "age" : 11}
-put user body json: {"login" : "login1", "password" : "password1", "age" : 11, "isDeleted" : false}
-get user body json: {"loginSubstring" : "og", "limit" : 2}
-post/put group json: {"name" : "a234" , "permissions" :["READ", "WRITE", "SHARE"]}
-post users group body json: ["userId1", "userId2"]
+post user http://localhost:8000/users body json: {"login" : "login1", "password" : "password1", "age" : 11}
+put user http://localhost:8000/users/userId body json: {"login" : "login1", "password" : "password1", "age" : 11, "isDeleted" : false}
+get user http://localhost:8000/users body json: {"loginSubstring" : "og", "limit" : 2}
+post group http://localhost:8000/groups body json: {"name" : "a234" , "permissions" :["READ", "WRITE", "SHARE"]}
+put group http://localhost:8000/groups/groupId body json: {"name" : "a234" , "permissions" :["READ", "WRITE", "SHARE"]}
+post add users to group http://localhost:8000/groups/groupId/users body json: ["userId1", "userId2"]
 
 Scripts to create DB:
 
