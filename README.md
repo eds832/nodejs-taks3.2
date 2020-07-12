@@ -17,7 +17,7 @@ body json: {"login" : "login1", "password" : "password1", "age" : 11}
 put user http://localhost:8000/users/userId 
 body json: {"login" : "login1", "password" : "password1", "age" : 11, "isDeleted" : false}
 
-get user http://localhost:8000/users 
+get users http://localhost:8000/users 
 body json: {"loginSubstring" : "og", "limit" : 2}
 
 post group http://localhost:8000/groups 
