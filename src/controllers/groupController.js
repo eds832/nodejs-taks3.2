@@ -60,7 +60,6 @@ export const updateGroup = async (request, response, next) => {
 export const getGroups = async (request, response, next) => {
     response.locals.log = 'getGroups';
     try {
-        response.send();
         response.locals.send = await getAllGroups();
         response.locals.status = 200;
         next();
