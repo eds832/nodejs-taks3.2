@@ -27,7 +27,7 @@ export const remove = async (id) => {
     return await removeUser(id);
 };
 
-export const checkToken = async (token) => {
+export const checkToken = (token) => {
     let decoded;
     try {
         decoded = jwt.verify(token, process.env.APP_SECRET);

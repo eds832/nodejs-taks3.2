@@ -391,7 +391,7 @@ describe("Check method \'checkUser\' ", () => {
     test('should call next with error if checkToken throws error', async () => {
         const mError = new Error('internal err');
 
-        checkToken.mockImplementationOnce(async () => {
+        checkToken.mockImplementationOnce(() => {
             throw mError;
         });
 

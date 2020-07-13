@@ -110,13 +110,13 @@ export const removeUser = async (request, response, next) => {
     }
 };
 
-export const checkUser = async (request, response, next) => {
+export const checkUser = (request, response, next) => {
     const authHeader = request.headers.authorization;
     logger.info(`checkUser with authHeader: ${authHeader}`);
     if (authHeader) {
         try {
             const token = typeof authHeader === 'string' && authHeader.split(' ')[0] === 'Bearer' && authHeader.split(' ')[1];
-            const isPassed = token && await checkToken(token);
+            const isPassed = token && checkToken(token);
             if (isPassed) {
                 next();
             } else {
