@@ -2,8 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import userRouter from './routes/userRouter';
 import groupRouter from './routes/groupRouter';
-import authRouter from './routes/authRouter';
-import loginRouter from './routes/loginRouter';
+import authMiddleware from './middlewares/authMiddleware';
 import logger from './util/logger';
 import { internalErr, notFound } from './util/constant';
 import { stringifyBody } from './util/util';
@@ -27,10 +26,13 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
-app.use(['/users', '/groups'], authRouter);
-app.post('/login', loginRouter);
-app.use('/users', userRouter);
-app.use('/groups', groupRouter);
+const securedRoutes = express.Router();
+
+securedRoutes.use(authMiddleware);
+securedRoutes.use('/users', userRouter);
+securedRoutes.use('/groups', groupRouter);
+
+app.use(securedRoutes);
 
 app.use((req, res, next) => {
     if (res.locals.log) {
