@@ -30,17 +30,17 @@ export const remove = async (id) => {
 export const checkToken = async (token) => {
     let decoded;
     try {
-        decoded = await jwt.verify(token, process.env.APP_SECRET);
+        decoded = jwt.verify(token, process.env.APP_SECRET);
     } catch (err) {
         logger.warn(`token: ${token} has error: ${err}`);
         return false;
     }
-    const user = decoded && decoded.sub && await getUser(decoded.sub);
-    if (user) {
-        logger.info(`user with id: ${user.id} is authorized with token: ${JSON.stringify(decoded)}`);
+    const userId = decoded && decoded.sub;
+    if (userId) {
+        logger.info(`user with id: ${userId} is authorized with token: ${JSON.stringify(decoded)}`);
         return true;
     }
-    logger.warn(`user with decoded token: ${decoded} wasn't found`);
+    logger.warn(`userId with decoded token: ${decoded} wasn't found`);
     return false;
 };
 

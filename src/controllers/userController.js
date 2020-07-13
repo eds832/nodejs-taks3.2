@@ -4,6 +4,7 @@ import { notFoundEntity, unauthorized, forbidden, wrongLogin, wrongLoginPassword
 import logger from '../util/logger';
 import bcrypt from 'bcryptjs';
 import { omitPassword } from '../util/util';
+import * as HttpStatus from 'http-status-codes';
 
 export const saveUser = async (request, response, next) => {
     let user = { id: uuidv4(), ...request.body, isDeleted: false };
@@ -12,14 +13,13 @@ export const saveUser = async (request, response, next) => {
     try {
         user = await save(user);
         if (user) {
-            response.locals.status = 201;
+            response.locals.status = HttpStatus.CREATED;
             response.locals.send = omitPassword(user);
-            next();
         } else {
-            response.locals.status = 400;
+            response.locals.status = HttpStatus.BAD_REQUEST;
             response.locals.send = wrongLogin;
-            next();
         }
+        next();
     } catch (err) {
         err.message = `saveUser failed: ${JSON.stringify(omitPassword(user))}, message: ${err.message}`;
         return next(err);
@@ -32,14 +32,13 @@ export const getUser = async (request, response, next) => {
     try {
         const user = await getById(id);
         if (user) {
-            response.locals.status = 200;
+            response.locals.status = HttpStatus.OK;
             response.locals.send = omitPassword(user);
-            next();
         } else {
-            response.locals.status = 404;
+            response.locals.status = HttpStatus.NOT_FOUND;
             response.locals.send = notFoundEntity;
-            next();
         }
+        next();
     } catch (err) {
         err.message = `getUser by id: ${id} failed, message: ${err.message}`;
         return next(err);
@@ -54,19 +53,17 @@ export const updateUser = async (request, response, next) => {
         user = await update(user.id, user);
         if (user) {
             if (user.error === undefined) {
-                response.locals.status = 200;
+                response.locals.status = HttpStatus.OK;
                 response.locals.send = omitPassword(user);
-                next();
             } else {
-                response.locals.status = 400;
+                response.locals.status = HttpStatus.BAD_REQUEST;
                 response.locals.send = wrongLogin;
-                next();
             }
         } else {
-            response.locals.status = 404;
+            response.locals.status = HttpStatus.NOT_FOUND;
             response.locals.send = notFoundEntity;
-            next();
         }
+        next();
     } catch (err) {
         err.message = `updateUser failed: ${JSON.stringify(omitPassword(user))}, message: ${err.message}`;
         return next(err);
@@ -85,7 +82,7 @@ export const getUsers = async (request, response, next) => {
             users = await getAllUsers();
         }
         users = users.map(u => omitPassword(u));
-        response.locals.status = 200;
+        response.locals.status = HttpStatus.OK;
         response.locals.send = users;
         next();
     } catch (err) {
@@ -100,14 +97,13 @@ export const removeUser = async (request, response, next) => {
     try {
         const user = await remove(id);
         if (user) {
-            response.locals.status = 200;
+            response.locals.status = HttpStatus.OK;
             response.locals.send = omitPassword(user);
-            next();
         } else {
-            response.locals.status = 404;
+            response.locals.status = HttpStatus.NOT_FOUND;
             response.locals.send = notFoundEntity;
-            next();
         }
+        next();
     } catch (err) {
         err.message = `removeUser by id: ${id} failed, message: ${err.message}`;
         return next(err);
@@ -122,17 +118,18 @@ export const checkUser = async (request, response, next) => {
             const token = typeof authHeader === 'string' && authHeader.split(' ')[0] === 'Bearer' && authHeader.split(' ')[1];
             const isPassed = token && await checkToken(token);
             if (isPassed) {
-                return next();
+                next();
+            } else {
+                logger.warn(`user with authHeader: ${JSON.stringify(authHeader)} wasn't authorized`);
+                response.status(HttpStatus.FORBIDDEN).send(forbidden);
             }
-            logger.warn(`user with authHeader: ${JSON.stringify(authHeader)} wasn't authorized`);
-            response.status(403).send(forbidden);
         } catch (err) {
             err.message = `checkUser with authHeader: ${authHeader} failed, message: ${err.message}`;
             return next(err);
         }
     } else {
         logger.info("user with empty authHeader wasn't authorized");
-        response.status(401).send(unauthorized);
+        response.status(HttpStatus.UNAUTHORIZED).send(unauthorized);
     }
 };
 
@@ -141,14 +138,13 @@ export const loginUser = async (request, response, next) => {
     try {
         const token = await login(request.body.username, request.body.password);
         if (token) {
-            response.locals.status = 201;
+            response.locals.status = HttpStatus.CREATED;
             response.locals.send = { token };
-            next();
         } else {
-            response.locals.status = 401;
+            response.locals.status = HttpStatus.UNAUTHORIZED;
             response.locals.send = wrongLoginPassword;
-            next();
         }
+        next();
     } catch (err) {
         err.message = `loginUser with login: ${request.body.username} failed, message: ${err.message}`;
         return next(err);

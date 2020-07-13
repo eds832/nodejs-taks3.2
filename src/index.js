@@ -6,8 +6,9 @@ import authRouter from './routes/authRouter';
 import loginRouter from './routes/loginRouter';
 import logger from './util/logger';
 import { internalErr, notFound } from './util/constant';
-import { unless, stringifyBody } from './util/util';
+import { stringifyBody } from './util/util';
 import cors from 'cors';
+import * as HttpStatus from 'http-status-codes';
 
 const app = express();
 
@@ -26,7 +27,7 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
-app.use(unless('/login', authRouter));
+app.use(['/users', '/groups'], authRouter);
 app.post('/login', loginRouter);
 app.use('/users', userRouter);
 app.use('/groups', groupRouter);
@@ -47,12 +48,12 @@ app.use((err, req, res, next) => {
         return next();
     }
     logger.error(err.message);
-    res.status(err.status || 500).send(internalErr);
+    res.status(err.status || HttpStatus.INTERNAL_SERVER_ERROR).send(internalErr);
 });
 
 app.use((req, res) => {
     logger.warn(`wrong request: ${req.url}, method: ${req.method}, body: ${stringifyBody(req.body)}`);
-    res.status(404).send(notFound);
+    res.status(HttpStatus.NOT_FOUND).send(notFound);
 });
 
 const port = process.env.PORT || 5000;
