@@ -27,6 +27,8 @@ app.use(cors(corsOptions));
 
 app.use(express.json());
 
+app.post('/login', loginRouter);
+
 const securedRoutes = express.Router();
 
 securedRoutes.use(authMiddleware);
@@ -34,8 +36,6 @@ securedRoutes.use('/users', userRouter);
 securedRoutes.use('/groups', groupRouter);
 
 app.use(securedRoutes);
-
-app.post('/login', loginRouter);
 
 app.use((req, res, next) => {
     if (res.locals.log) {

@@ -414,6 +414,8 @@ describe("Check method \'loginUser\' ", () => {
         req = { body: { username: 'login1', password: 'password1' } };
         res = { locals: {} };
         mockedNext = jest.fn();
+        res.send = jest.fn().mockReturnValue(res);
+        res.status = jest.fn().mockReturnValue(res);
     });
 
     afterEach(() => {
@@ -425,10 +427,11 @@ describe("Check method \'loginUser\' ", () => {
 
         await loginUser(req, res, mockedNext);
 
-        expect(mockedNext).toHaveBeenCalledTimes(1);
-        expect(mockedNext).toHaveBeenCalledWith();
-        expect(res.locals.status).toEqual(201);
-        expect(res.locals.send).toEqual({ token: 'abc123' });
+        expect(mockedNext).toHaveBeenCalledTimes(0);
+        expect(res.status).toHaveBeenCalledTimes(1);
+        expect(res.status).toBeCalledWith(201);
+        expect(res.send).toHaveBeenCalledTimes(1);
+        expect(res.send).toBeCalledWith({ token: 'abc123' });
         expect(login).toBeCalledWith('login1', 'password1');
         expect(login).toHaveBeenCalledTimes(1);
     });
@@ -438,10 +441,11 @@ describe("Check method \'loginUser\' ", () => {
 
         await loginUser(req, res, mockedNext);
 
-        expect(mockedNext).toHaveBeenCalledTimes(1);
-        expect(mockedNext).toHaveBeenCalledWith();
-        expect(res.locals.status).toEqual(401);
-        expect(res.locals.send).toEqual(wrongLoginPassword);
+        expect(mockedNext).toHaveBeenCalledTimes(0);
+        expect(res.status).toHaveBeenCalledTimes(1);
+        expect(res.status).toBeCalledWith(401);
+        expect(res.send).toHaveBeenCalledTimes(1);
+        expect(res.send).toBeCalledWith(wrongLoginPassword);
         expect(login).toBeCalledWith('login1', 'password1');
         expect(login).toHaveBeenCalledTimes(1);
     });
