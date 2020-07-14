@@ -134,17 +134,14 @@ export const checkUser = (request, response, next) => {
 };
 
 export const loginUser = async (request, response, next) => {
-    response.locals.log = `loginUser with login: ${request.body.username}`;
+    logger.info(`loginUser with login: ${request.body.username}`);
     try {
         const token = await login(request.body.username, request.body.password);
         if (token) {
-            response.locals.status = HttpStatus.CREATED;
-            response.locals.send = { token };
+            response.status(HttpStatus.CREATED).send({ token });
         } else {
-            response.locals.status = HttpStatus.UNAUTHORIZED;
-            response.locals.send = wrongLoginPassword;
+            response.status(HttpStatus.UNAUTHORIZED).send(wrongLoginPassword);
         }
-        next();
     } catch (err) {
         err.message = `loginUser with login: ${request.body.username} failed, message: ${err.message}`;
         return next(err);
