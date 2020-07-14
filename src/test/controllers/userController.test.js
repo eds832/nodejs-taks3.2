@@ -346,10 +346,10 @@ describe("Check method \'checkUser\' ", () => {
         jest.resetAllMocks();
     });
 
-    test('should call checkToken, then call next', async () => {
+    test('should call checkToken, then call next', () => {
         checkToken.mockReturnValueOnce(true);
 
-        await checkUser(req, res, mockedNext);
+        checkUser(req, res, mockedNext);
 
         expect(mockedNext).toHaveBeenCalledTimes(1);
         expect(mockedNext).toHaveBeenCalledWith();
@@ -357,12 +357,12 @@ describe("Check method \'checkUser\' ", () => {
         expect(checkToken).toHaveBeenCalledTimes(1);
     });
 
-    test('should have status 401 and send unauthorized', async () => {
+    test('should have status 401 and send unauthorized', () => {
         req = { headers: {} };
         res.send = jest.fn().mockReturnValue(res);
         res.status = jest.fn().mockReturnValue(res);
 
-        await checkUser(req, res, mockedNext);
+        checkUser(req, res, mockedNext);
 
         expect(mockedNext).toHaveBeenCalledTimes(0);
         expect(checkToken).toHaveBeenCalledTimes(0);
@@ -372,12 +372,12 @@ describe("Check method \'checkUser\' ", () => {
         expect(res.send).toHaveBeenCalledWith(unauthorized);
     });
 
-    test('should have status 403 and send forbidden', async () => {
+    test('should have status 403 and send forbidden', () => {
         checkToken.mockReturnValueOnce(false);
         res.send = jest.fn().mockReturnValue(res);
         res.status = jest.fn().mockReturnValue(res);
 
-        await checkUser(req, res, mockedNext);
+        checkUser(req, res, mockedNext);
 
         expect(mockedNext).toHaveBeenCalledTimes(0);
         expect(res.status).toHaveBeenCalledTimes(1);
@@ -388,14 +388,14 @@ describe("Check method \'checkUser\' ", () => {
         expect(checkToken).toHaveBeenCalledTimes(1);
     });
 
-    test('should call next with error if checkToken throws error', async () => {
+    test('should call next with error if checkToken throws error', () => {
         const mError = new Error('internal err');
 
         checkToken.mockImplementationOnce(() => {
             throw mError;
         });
 
-        await checkUser(req, res, mockedNext);
+        checkUser(req, res, mockedNext);
 
         expect(mockedNext).toHaveBeenCalledTimes(1);
         expect(mockedNext).toHaveBeenCalledWith(mError);
