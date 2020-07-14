@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import userRouter from './routes/userRouter';
 import groupRouter from './routes/groupRouter';
+import loginRouter from './routes/loginRouter';
 import authMiddleware from './middlewares/authMiddleware';
 import logger from './util/logger';
 import { internalErr, notFound } from './util/constant';
@@ -33,6 +34,8 @@ securedRoutes.use('/users', userRouter);
 securedRoutes.use('/groups', groupRouter);
 
 app.use(securedRoutes);
+
+app.post('/login', loginRouter);
 
 app.use((req, res, next) => {
     if (res.locals.log) {

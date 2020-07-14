@@ -1,12 +1,11 @@
-import express from 'express';
-import { checkUser, loginUser } from '../controllers/userController';
-import { loginSchema } from '../schemas/schemas';
-import { validateSchema } from '../schemas/validator';
+import { checkUser } from '../controllers/userController';
 
-const authMiddleware = express.Router();
-
-authMiddleware.use(['/users', '/groups'], checkUser);
-
-authMiddleware.post('/login', validateSchema(loginSchema), loginUser);
+const authMiddleware = (req, res, next) => {
+    if (req.path === '/login' && req.method === 'POST') {
+        next();
+    } else {
+        checkUser(req, res, next);
+    }
+};
 
 export default authMiddleware;
